@@ -1,12 +1,213 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="refresh" content="0; url=/auction.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>IPL Auction</title>
-  </head>
-  <body>
-    <p>Redirecting to <a href="/auction.html">auction.html</a>...</p>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="5; url=https://cricket-gavel-multiplayer.netlify.app/auction.html" />
+    <title>IPL Auction Arena</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --pitch-green: #2e7d32;
+            --grass-dark: #1b5e20;
+            --ball-red: #d32f2f;
+            --leather: #8d6e63;
+            --white: #ffffff;
+            --neon: #76ff03;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, var(--pitch-green), var(--grass-dark));
+            overflow: hidden;
+            color: var(--white);
+            text-align: center;
+        }
+
+        /* Stadium Light Effect */
+        .spotlight {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0) 60%);
+            animation: rotateLight 10s infinite linear;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            max-width: 90%;
+            width: 400px;
+        }
+
+        h1 {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        p {
+            color: #e0e0e0;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        /* Cricket Ball Animation */
+        .cricket-ball {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 30% 30%, #ff5252, var(--ball-red));
+            border-radius: 50%;
+            margin: 0 auto 2rem;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            animation: spin 1s infinite linear, bounce 0.6s infinite alternate ease-in-out;
+        }
+
+        /* The Seam */
+        .cricket-ball::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 48px;
+            height: 100%;
+            border: 3px dashed var(--white);
+            border-radius: 50%;
+            box-sizing: border-box;
+            opacity: 0.8;
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(255,255,255,0.6);
+            border-left: 2px dashed white;
+            border-right: 2px dashed white;
+            border-top: none;
+            border-bottom: none;
+            transform: rotate(45deg);
+        }
+
+        /* Progress Bar */
+        .loader-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .loader-bar {
+            height: 100%;
+            background: var(--neon);
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px var(--neon);
+        }
+
+        .status {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--neon);
+        }
+
+        .manual-link {
+            display: block;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.8rem;
+            text-decoration: none;
+        }
+        
+        .manual-link:hover {
+            color: var(--white);
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-20px); }
+        }
+
+        @keyframes rotateLight {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="spotlight"></div>
+
+    <div class="container">
+        <div class="cricket-ball"></div>
+
+        <h1>Auction Arena</h1>
+        <p>Entering the bidding room...</p>
+
+        <div class="loader-track">
+            <div class="loader-bar" id="progressBar"></div>
+        </div>
+        <div class="status">Redirecting in <span id="countdown">3</span>s</div>
+
+        <a href="https://cricket-gavel-multiplayer.netlify.app/auction.html" class="manual-link">
+            Click here if you are not redirected
+        </a>
+    </div>
+
+    <script>
+        // --- JAVASCRIPT REDIRECT LOGIC ---
+        const targetUrl = "https://cricket-gavel-multiplayer.netlify.app/auction.html";
+        const duration = 3000; // 3 seconds total time
+        const intervalTime = 50; // Update every 50ms
+        let elapsed = 0;
+
+        const progressBar = document.getElementById('progressBar');
+        const countdownSpan = document.getElementById('countdown');
+
+        const timer = setInterval(() => {
+            elapsed += intervalTime;
+            
+            // Update Width of bar
+            const percentage = (elapsed / duration) * 100;
+            progressBar.style.width = percentage + "%";
+
+            // Update Countdown Text
+            const secondsLeft = Math.ceil((duration - elapsed) / 1000);
+            if(secondsLeft >= 0) {
+                countdownSpan.innerText = secondsLeft;
+            }
+
+            // Trigger Redirect
+            if (elapsed >= duration) {
+                clearInterval(timer);
+                window.location.href = targetUrl;
+            }
+        }, intervalTime);
+    </script>
+</body>
 </html>
