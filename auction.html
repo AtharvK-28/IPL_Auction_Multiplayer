@@ -729,6 +729,10 @@
             }
         }
 
+        // Backend WebSocket URL (set to your Render hostname)
+        // For Render: use wss://ipl-auction-multiplayer.onrender.com
+        const BACKEND_WS_URL = 'wss://ipl-auction-multiplayer.onrender.com';
+
         // Initialize the game
         function initGame() {
             connectWebSocket();
@@ -736,11 +740,14 @@
         }
 
         function connectWebSocket() {
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            ws = new WebSocket(`${protocol}//${window.location.host}`);
+            const backend = (typeof BACKEND_WS_URL !== 'undefined' && BACKEND_WS_URL)
+                ? BACKEND_WS_URL
+                : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`;
+
+            ws = new WebSocket(backend);
 
             ws.onopen = () => {
-                console.log('Connected to server');
+                console.log('Connected to server', backend);
             };
 
             ws.onmessage = (event) => {
